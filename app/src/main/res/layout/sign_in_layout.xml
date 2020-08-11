@@ -15,7 +15,7 @@
             android:id="@+id/emailFieldAuth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email"
             android:textSize="20sp"
             android:inputType="textEmailAddress"
             app:met_floatingLabel="normal"
@@ -25,7 +25,7 @@
             android:id="@+id/passwordFieldAuth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Пароль"
+            android:hint="@string/pass"
             android:textSize="20sp"
             android:inputType="textPassword"
             app:met_floatingLabel="normal" />

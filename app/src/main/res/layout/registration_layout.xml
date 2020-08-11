@@ -16,7 +16,7 @@
             android:id="@+id/emailFieldReg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email"
             android:textSize="20sp"
             android:inputType="textEmailAddress"
             app:met_floatingLabel="normal"
@@ -26,29 +26,31 @@
             android:id="@+id/passwordFieldReg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Пароль"
+            android:hint="@string/pass"
             android:textSize="20sp"
             android:inputType="textPassword"
             app:met_floatingLabel="normal"
             app:met_minCharacters="6"
-            app:met_maxCharacters="15"/>
+            app:met_maxCharacters="15"
+            android:maxLength="15"/>
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/confirmPasswordField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Повторите пароль"
+            android:hint="@string/confirmPass"
             android:textSize="20sp"
             android:inputType="textPassword"
             app:met_floatingLabel="normal"
             app:met_minCharacters="6"
-            app:met_maxCharacters="15"/>
+            app:met_maxCharacters="15"
+            android:maxLength="15"/>
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/nameField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Имя пользователя"
+            android:hint="@string/userName"
             android:textSize="20sp"
             android:inputType="text"
             app:met_floatingLabel="normal"/>
@@ -57,19 +59,21 @@
             android:id="@+id/heightField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Рост"
+            android:hint="@string/height"
             android:textSize="20sp"
             android:inputType="number"
-            app:met_floatingLabel="normal"/>
+            app:met_floatingLabel="normal"
+            android:maxLength="5"/>
 
         <com.rengwuxian.materialedittext.MaterialEditText
             android:id="@+id/weightField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Вес"
+            android:hint="@string/weight"
             android:textSize="20sp"
             android:inputType="number"
-            app:met_floatingLabel="normal"/>
+            app:met_floatingLabel="normal"
+            android:maxLength="5"/>
 
     </LinearLayout>
 

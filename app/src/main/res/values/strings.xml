@@ -3,4 +3,28 @@
     <string name="auth">Авторизация</string>
     <string name="reg">Регистрация</string>
     <string name="underName">Приложение для тренировок</string>
+
+    <string name="title_activity_basic">BasicActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_account">Аккаунт</string>
+    <string name="menu_trainings">Тренировки</string>
+    <string name="menu_chart">Графики</string>
+
+    <string name="email">Email</string>
+    <string name="pass">Пароль</string>
+    <string name="confirmPass">Повторите пароль</string>
+    <string name="userName">Имя пользователя</string>
+    <string name="height">Рост</string>
+    <string name="weight">Вес</string>
+
+    <string name="change">Изменить</string>
+    <string name="heightAcc">Рост:</string>
+    <string name="weightAcc">Вес:</string>
+    <string name="log_out">Выйти из аккаунта</string>
 </resources>

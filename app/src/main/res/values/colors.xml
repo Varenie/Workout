@@ -3,7 +3,14 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="colorBtn">#F08080</color>
+
     <color name="colorAppName">#8B0000</color>
+    <color name="colorBtn">#F08080</color>
     <color name="rippleEffect">#D36464</color>
+
+    <color name="progress">#BECF35</color>
+
+    <color name="colorBtnAcc">#CAD3D2</color>
+    <color name="rippleEffectAcc">#B1BBBA</color>
+
 </resources>

@@ -71,10 +71,10 @@ class MainActivity : AppCompatActivity() {
 
                 }
 
-                password.length() < 6 || password.length() > 15 -> {
+                password.length() < 6 -> {
                     val toast = Toast.makeText(
                         this@MainActivity,
-                        "Длина пароля должна быть в пределе!",
+                        "Пароль не менее 6 символов!",
                         Toast.LENGTH_SHORT
                     )
                     toast.setGravity(Gravity.TOP, 0, 0)
@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
                                 dbUsers.child(userId).setValue(user)
 
-                                startActivity(Intent(this, MenuActivity::class.java))
+                                startActivity(Intent(this, BasicActivity::class.java))
                             } else {
                                 // If sign in fails, display a message to the user.
                                 val toast = Toast.makeText(
@@ -197,7 +197,7 @@ class MainActivity : AppCompatActivity() {
                             if (task.isSuccessful) {
                                 // Sign in success, update UI with the signed-in user's information
                                 val user = auth.currentUser
-                                startActivity(Intent(this, MenuActivity::class.java))
+                                startActivity(Intent(this, BasicActivity::class.java))
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(
