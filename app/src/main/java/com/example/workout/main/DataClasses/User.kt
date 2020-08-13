@@ -6,8 +6,8 @@ data class User(
     val uId: String? = "",
     val email: String? = "",
     val name: String? = "",
-    val height: Int = 0,
-    val weight: Int = 0
+    val height: Double = 0.0,
+    val weight: Double = 0.0
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> {

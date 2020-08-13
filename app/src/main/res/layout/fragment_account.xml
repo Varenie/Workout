@@ -85,7 +85,8 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="7dp"
                 android:inputType="numberDecimal"
-                android:hint="XXX.X" />
+                android:hint="XXX.X"
+                android:maxLength="5"/>
 
             <EditText
                 android:id="@+id/edit_weight"
@@ -94,7 +95,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="7dp"
                 android:inputType="numberDecimal"
-                android:hint="XX.X" />
+                android:hint="XX.X"
+                android:maxLength="5"/>
 
         </LinearLayout>
 

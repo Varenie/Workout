@@ -35,7 +35,6 @@ class AccountFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_account, container, false)
 
         auth = Firebase.auth
-
         val userId = auth.currentUser!!.uid
 
         dbUsers.addValueEventListener(object : ValueEventListener {
@@ -70,4 +69,6 @@ class AccountFragment : Fragment() {
         height.text = "Рост: ${user.height}"
         weight.text = "Вес: ${user.weight}"
     }
+
+
 }

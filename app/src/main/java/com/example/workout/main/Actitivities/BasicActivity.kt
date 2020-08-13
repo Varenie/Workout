@@ -2,9 +2,13 @@ package com.example.workout.main.Actitivities
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -18,12 +22,24 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.workout.R
+import com.example.workout.main.DataClasses.User
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class BasicActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    private lateinit var auth: FirebaseAuth
+
+    private val db = Firebase.database
+    private val dbUsers = db.getReference("Users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +47,36 @@ class BasicActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
+        auth = Firebase.auth
+        val userId = auth.currentUser!!.uid
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
+
+        val header = navView.getHeaderView(0)
+        val nav_head = header.findViewById<TextView>(R.id.nav_header_title)
+
+        dbUsers.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val value = dataSnapshot.child(userId).child("name").value
+                nav_head.text = value.toString()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                val toast = Toast.makeText(
+                    this@BasicActivity,
+                    "Ошибка загрузки данных",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            }
+        })
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
@@ -67,22 +105,62 @@ class BasicActivity : AppCompatActivity() {
     }
 
     fun changeHeight(view: View){
-        val toast = Toast.makeText(
-            this@BasicActivity,
-            "Функция в разработке",
-            Toast.LENGTH_SHORT
-        )
-        toast.setGravity(Gravity.TOP, 0, 0)
-        toast.show()
+        val heightText = this.findViewById<EditText>(R.id.edit_height)
+
+        if (TextUtils.isEmpty(heightText.text)) {
+            val toast = Toast.makeText(
+                this@BasicActivity,
+                "Поле не заполнено",
+                Toast.LENGTH_SHORT
+            )
+            toast.setGravity(Gravity.TOP, 0, 0)
+            toast.show()
+        } else {
+            val height = heightText.text.toString().toDouble()
+            val userId = auth.currentUser!!.uid
+
+            if (height < 100) {
+                val toast = Toast.makeText(
+                    this@BasicActivity,
+                    "Прошу прощения, но кажется ваш рост точно больше 100 см",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            } else
+                dbUsers.child(userId).child("height").setValue(height)
+        }
+
+        heightText.setText("")
     }
 
     fun changeWeight(view: View){
-        val toast = Toast.makeText(
-            this@BasicActivity,
-            "Функция в разработке",
-            Toast.LENGTH_SHORT
-        )
-        toast.setGravity(Gravity.TOP, 0, 0)
-        toast.show()
+        val weightText = this.findViewById<EditText>(R.id.edit_weight)
+
+        if (TextUtils.isEmpty(weightText.text)) {
+            val toast = Toast.makeText(
+                this@BasicActivity,
+                "Поле не заполнено",
+                Toast.LENGTH_SHORT
+            )
+            toast.setGravity(Gravity.TOP, 0, 0)
+            toast.show()
+        } else {
+            val weight = weightText.text.toString().toDouble()
+            val userId = auth.currentUser!!.uid
+
+            if (weight < 30) {
+                val toast = Toast.makeText(
+                    this@BasicActivity,
+                    "Прошу прощения, но кажется ваш вес точно больше 30 кг",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            } else
+                dbUsers.child(userId).child("weight").setValue(weight)
+        }
+
+        weightText.setText("")
     }
 }

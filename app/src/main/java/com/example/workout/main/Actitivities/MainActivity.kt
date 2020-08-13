@@ -56,8 +56,8 @@ class MainActivity : AppCompatActivity() {
         dialog.setPositiveButton("Подтвердить", DialogInterface.OnClickListener { dialogInterface, which ->
             val pass = password.text.toString()
             val confirmPass = confirmPassword.text.toString()
-            var heightN = 0
-            var weightN = 0
+            var heightN: Double = 0.0
+            var weightN: Double = 0.0
 
             when {
                 TextUtils.isEmpty(email.text) -> {
@@ -101,9 +101,9 @@ class MainActivity : AppCompatActivity() {
                     toast.show()
                 }
 
-                !TextUtils.isEmpty(height.text) -> heightN = height.text.toString().toInt()
+                !TextUtils.isEmpty(height.text) -> heightN = height.text.toString().toDouble()
 
-                !TextUtils.isEmpty(weight.text) -> weightN = weight.text.toString().toInt()
+                !TextUtils.isEmpty(weight.text) -> weightN = weight.text.toString().toDouble()
 
                 else ->{
 
