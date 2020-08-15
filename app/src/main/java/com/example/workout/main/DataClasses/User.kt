@@ -7,7 +7,9 @@ data class User(
     val email: String? = "",
     val name: String? = "",
     val height: Double = 0.0,
-    val weight: Double = 0.0
+    val weight: Double = 0.0,
+    val gender: String? = "",
+    val icon: String? = ""
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> {
@@ -16,7 +18,9 @@ data class User(
             "email" to email,
             "name" to name,
             "height" to height,
-            "weigth" to weight
+            "weigth" to weight,
+            "gender" to gender,
+            "icon" to icon
         )
     }
 }

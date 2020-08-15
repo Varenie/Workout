@@ -1,5 +1,6 @@
 package com.example.workout.main.Fragments
 
+import android.net.Uri.parse
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -7,11 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
+import com.google.android.gms.common.util.HttpUtils.parse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -20,12 +23,19 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.net.URI
+import java.util.logging.Level.parse
 
 class AccountFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
+
+    val icons = mapOf(
+        "user" to R.drawable.user,
+        "axe" to R.drawable.battle_axe
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,10 +74,14 @@ class AccountFragment : Fragment() {
         val name = root.findViewById<TextView>(R.id.userName)
         val height = root.findViewById<TextView>(R.id.height_acc)
         val weight = root.findViewById<TextView>(R.id.weight_acc)
+        val userImage = root.findViewById<ImageView>(R.id.userImage)
+        val image = user!!.icon
 
         name.text = user!!.name
         height.text = "Рост: ${user.height}"
         weight.text = "Вес: ${user.weight}"
+        userImage.setImageResource(icons[image]!!)
+
     }
 
 

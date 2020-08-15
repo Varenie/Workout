@@ -2,15 +2,17 @@ package com.example.workout.main.Actitivities
 
 import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
 import com.google.firebase.auth.FirebaseAuth
@@ -18,6 +20,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -47,6 +50,8 @@ class MainActivity : AppCompatActivity() {
         val name = registerWindow.findViewById<MaterialEditText>(R.id.nameField)
         val height = registerWindow.findViewById<MaterialEditText>(R.id.heightField)
         val weight = registerWindow.findViewById<MaterialEditText>(R.id.weightField)
+        val rbtn_male = registerWindow.findViewById<RadioButton>(R.id.gender_male)
+        val rbtn_famale = registerWindow.findViewById<RadioButton>(R.id.gender_famale)
 
 
         dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterfaсe, which ->
@@ -56,8 +61,12 @@ class MainActivity : AppCompatActivity() {
         dialog.setPositiveButton("Подтвердить", DialogInterface.OnClickListener { dialogInterface, which ->
             val pass = password.text.toString()
             val confirmPass = confirmPassword.text.toString()
-            var heightN: Double = 0.0
-            var weightN: Double = 0.0
+            var heightN = 0.0
+            var weightN = 0.0
+            var gender = "Мужской"
+
+            if (!TextUtils.isEmpty(height.text))  heightN = height.text.toString().toDouble()
+            if (!TextUtils.isEmpty(weight.text))  weightN = weight.text.toString().toDouble()
 
             when {
                 TextUtils.isEmpty(email.text) -> {
@@ -68,7 +77,6 @@ class MainActivity : AppCompatActivity() {
                     )
                     toast.setGravity(Gravity.TOP, 0, 0)
                     toast.show()
-
                 }
 
                 password.length() < 6 -> {
@@ -101,12 +109,39 @@ class MainActivity : AppCompatActivity() {
                     toast.show()
                 }
 
-                !TextUtils.isEmpty(height.text) -> heightN = height.text.toString().toDouble()
+                heightN < 100-> {
+                    val toast = Toast.makeText(
+                        this@MainActivity,
+                        "Укажите ваш рост!" +
+                                "(от 100см)",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.show()
+                }
 
-                !TextUtils.isEmpty(weight.text) -> weightN = weight.text.toString().toDouble()
+                weightN < 30 -> {
+                    val toast = Toast.makeText(
+                        this@MainActivity,
+                        "Укажите ваш вес!" +
+                                "(от 30кг)",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.show()
+                }
+
+                !(rbtn_male.isChecked || rbtn_famale.isChecked) -> {
+                    val toast = Toast.makeText(
+                        this@MainActivity,
+                        "Укажите ваш пол!",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.setGravity(Gravity.TOP, 0, 0)
+                    toast.show()
+                }
 
                 else ->{
-
                     auth.createUserWithEmailAndPassword(email.text.toString(), pass)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
@@ -119,13 +154,17 @@ class MainActivity : AppCompatActivity() {
                                 toast.setGravity(Gravity.TOP, 0, 0)
                                 toast.show()
 
+                                if (rbtn_famale.isChecked) gender = "Женский"
+
                                 val userId = auth.currentUser!!.uid
                                 val user = User(
                                     userId,
                                     email.text.toString(),
                                     name.text.toString(),
                                     heightN,
-                                    weightN
+                                    weightN,
+                                    gender,
+                                    "user.png"
                                 )
                                 Log.d("PROVERKA", user.toString())
 

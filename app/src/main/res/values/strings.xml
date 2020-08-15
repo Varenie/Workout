@@ -21,6 +21,9 @@
     <string name="userName">Имя пользователя</string>
     <string name="height">Рост</string>
     <string name="weight">Вес</string>
+    <string name="gender">Укажите пол:</string>
+    <string name="genderM">Мужской</string>
+    <string name="genderF">Женский</string>
 
     <string name="change">Изменить</string>
     <string name="heightAcc">Рост:</string>

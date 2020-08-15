@@ -8,6 +8,7 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -23,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
+import com.example.workout.main.Fragments.AccountFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -41,6 +43,11 @@ class BasicActivity : AppCompatActivity() {
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
 
+    val icons = mapOf(
+        "user" to R.drawable.user,
+        "axe" to R.drawable.battle_axe
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_basic)
@@ -56,13 +63,16 @@ class BasicActivity : AppCompatActivity() {
 
         val header = navView.getHeaderView(0)
         val nav_head = header.findViewById<TextView>(R.id.nav_header_title)
+        val userImage = header.findViewById<ImageView>(R.id.nav_user_image)
 
         dbUsers.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                val value = dataSnapshot.child(userId).child("name").value
-                nav_head.text = value.toString()
+                val value = dataSnapshot.child(userId).getValue<User>()
+                val image = value!!.icon
+                nav_head.text = value!!.name.toString()
+                userImage.setImageResource(icons[image]!!)
             }
 
             override fun onCancelled(error: DatabaseError) {
