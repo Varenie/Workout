@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
@@ -31,11 +32,6 @@ class AccountFragment : Fragment() {
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
-
-    val icons = mapOf(
-        "user" to R.drawable.user,
-        "axe" to R.drawable.battle_axe
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -77,10 +73,10 @@ class AccountFragment : Fragment() {
         val userImage = root.findViewById<ImageView>(R.id.userImage)
         val image = user!!.icon
 
-        name.text = user!!.name
+        name.text = user?.name
         height.text = "Рост: ${user.height}"
         weight.text = "Вес: ${user.weight}"
-        userImage.setImageResource(icons[image]!!)
+        userImage.setImageURI(image?.toUri())
 
     }
 

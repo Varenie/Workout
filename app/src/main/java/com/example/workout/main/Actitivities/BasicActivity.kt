@@ -22,6 +22,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
 import com.example.workout.main.Fragments.AccountFragment
@@ -42,11 +43,6 @@ class BasicActivity : AppCompatActivity() {
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
-
-    val icons = mapOf(
-        "user" to R.drawable.user,
-        "axe" to R.drawable.battle_axe
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +68,7 @@ class BasicActivity : AppCompatActivity() {
                 val value = dataSnapshot.child(userId).getValue<User>()
                 val image = value!!.icon
                 nav_head.text = value!!.name.toString()
-                userImage.setImageResource(icons[image]!!)
+                userImage.setImageURI(image?.toUri())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -172,5 +168,9 @@ class BasicActivity : AppCompatActivity() {
         }
 
         weightText.setText("")
+    }
+
+    fun changeIcon(view: View) {
+        startActivity(Intent(this@BasicActivity, IconActivity::class.java))
     }
 }

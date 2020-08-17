@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                                     heightN,
                                     weightN,
                                     gender,
-                                    "user.png"
+                                    "android.resource://com.example.workout/drawable/user"
                                 )
                                 Log.d("PROVERKA", user.toString())
 

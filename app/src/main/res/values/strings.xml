@@ -29,4 +29,6 @@
     <string name="heightAcc">Рост:</string>
     <string name="weightAcc">Вес:</string>
     <string name="log_out">Выйти из аккаунта</string>
+
+    <string name="icon_change">Выберите изображение</string>
 </resources>
