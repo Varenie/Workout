@@ -109,22 +109,20 @@ class MainActivity : AppCompatActivity() {
                     toast.show()
                 }
 
-                heightN < 100-> {
+                (heightN < 100 || heightN > 250) -> {
                     val toast = Toast.makeText(
                         this@MainActivity,
-                        "Укажите ваш рост!" +
-                                "(от 100см)",
+                        "Укажите верные параметры роста!",
                         Toast.LENGTH_SHORT
                     )
                     toast.setGravity(Gravity.TOP, 0, 0)
                     toast.show()
                 }
 
-                weightN < 30 -> {
+                (weightN < 30 || weightN > 250) -> {
                     val toast = Toast.makeText(
                         this@MainActivity,
-                        "Укажите ваш вес!" +
-                                "(от 30кг)",
+                        "Укажите верные параметры веса!",
                         Toast.LENGTH_SHORT
                     )
                     toast.setGravity(Gravity.TOP, 0, 0)
@@ -186,8 +184,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
-
         dialog.show()
     }
 

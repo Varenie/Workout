@@ -1,5 +1,6 @@
 package com.example.workout.main.Fragments
 
+import android.graphics.BitmapFactory
 import android.net.Uri.parse
 import android.os.Bundle
 import android.util.Log
@@ -73,11 +74,19 @@ class AccountFragment : Fragment() {
         val userImage = root.findViewById<ImageView>(R.id.userImage)
         val image = user!!.icon
 
+        val inputStream = image?.toUri()?.let {
+            requireActivity().contentResolver.openInputStream(
+                it
+            )
+        }
+        val bmp = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+
+        userImage.setImageBitmap(bmp)
+
         name.text = user?.name
         height.text = "Рост: ${user.height}"
         weight.text = "Вес: ${user.weight}"
-        userImage.setImageURI(image?.toUri())
-
     }
 
 

@@ -1,9 +1,10 @@
 package com.example.workout.main.Actitivities
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
@@ -11,21 +12,18 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.net.toUri
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.core.net.toUri
 import com.example.workout.R
 import com.example.workout.main.DataClasses.User
-import com.example.workout.main.Fragments.AccountFragment
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -34,6 +32,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import java.io.InputStream
+import kotlin.random.Random
 
 class BasicActivity : AppCompatActivity() {
 
@@ -43,6 +43,14 @@ class BasicActivity : AppCompatActivity() {
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
+
+    val quotes = arrayOf(
+        "Чтобы сделать в мире что-нибудь достойное, нельзя стоять на берегу, дрожа и думая о холодной воде и опасностях, подстерегающих пловцов. Надо прыгать в воду и выплывать, как получится / Сидней Смит",
+        "Кто может, тот делает, кто не может, тот критикует / Чак Паланик",
+        "Всегда делай то, что ты боишься сделать / Ральф Уолдо Эмерсон",
+        "Успех чаще выпадает на долю того, кто смело действует, но его редко добиваются те, кто проявляет робость и постоянно опасается последствий / Джавахарлал Неру",
+        "Если Вы хотите иметь то, что никогда не имели, — начните делать то, что никогда не делали / Ричард Бах"
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +67,11 @@ class BasicActivity : AppCompatActivity() {
 
         val header = navView.getHeaderView(0)
         val nav_head = header.findViewById<TextView>(R.id.nav_header_title)
+        val nav_sub = header.findViewById<TextView>(R.id.nav_header_subtitle)
         val userImage = header.findViewById<ImageView>(R.id.nav_user_image)
+
+        val rand = Random.nextInt(0, quotes.size)
+        nav_sub.text = quotes[rand]
 
         dbUsers.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -67,8 +79,18 @@ class BasicActivity : AppCompatActivity() {
                 // whenever data at this location is updated.
                 val value = dataSnapshot.child(userId).getValue<User>()
                 val image = value!!.icon
+
+
+                val inputStream = image?.toUri()?.let {
+                    this@BasicActivity.contentResolver.openInputStream(
+                        it
+                    )
+                }
+                val bmp = BitmapFactory.decodeStream(inputStream)
+                inputStream?.close()
+
                 nav_head.text = value!!.name.toString()
-                userImage.setImageURI(image?.toUri())
+                userImage.setImageBitmap(bmp)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -105,67 +127,50 @@ class BasicActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    fun log_out(view: View) {
+    fun logOut(view: View) {
         Firebase.auth.signOut()
         startActivity(Intent(this, MainActivity::class.java))
     }
 
     fun changeHeight(view: View){
         val heightText = this.findViewById<EditText>(R.id.edit_height)
+        var height = 0.0
+        if (TextUtils.isEmpty(heightText.text)) height = heightText.text.toString().toDouble()
 
-        if (TextUtils.isEmpty(heightText.text)) {
+        val userId = auth.currentUser!!.uid
+
+        if (height < 100 || height > 250) {
             val toast = Toast.makeText(
                 this@BasicActivity,
-                "Поле не заполнено",
+                "Укажите верные параметры роста",
                 Toast.LENGTH_SHORT
             )
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
-        } else {
-            val height = heightText.text.toString().toDouble()
-            val userId = auth.currentUser!!.uid
-
-            if (height < 100) {
-                val toast = Toast.makeText(
-                    this@BasicActivity,
-                    "Прошу прощения, но кажется ваш рост точно больше 100 см",
-                    Toast.LENGTH_SHORT
-                )
-                toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else
-                dbUsers.child(userId).child("height").setValue(height)
-        }
+        } else
+            dbUsers.child(userId).child("height").setValue(height)
 
         heightText.setText("")
     }
 
     fun changeWeight(view: View){
         val weightText = this.findViewById<EditText>(R.id.edit_weight)
+        var weight = 0.0
 
-        if (TextUtils.isEmpty(weightText.text)) {
+        if (!TextUtils.isEmpty(weightText.text))  weight = weightText.text.toString().toDouble()
+
+        val userId = auth.currentUser!!.uid
+
+        if (weight < 30) {
             val toast = Toast.makeText(
                 this@BasicActivity,
-                "Поле не заполнено",
+                "Укажите верные параметры веса",
                 Toast.LENGTH_SHORT
             )
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
-        } else {
-            val weight = weightText.text.toString().toDouble()
-            val userId = auth.currentUser!!.uid
-
-            if (weight < 30) {
-                val toast = Toast.makeText(
-                    this@BasicActivity,
-                    "Прошу прощения, но кажется ваш вес точно больше 30 кг",
-                    Toast.LENGTH_SHORT
-                )
-                toast.setGravity(Gravity.TOP, 0, 0)
-                toast.show()
-            } else
-                dbUsers.child(userId).child("weight").setValue(weight)
-        }
+        } else
+            dbUsers.child(userId).child("weight").setValue(weight)
 
         weightText.setText("")
     }
