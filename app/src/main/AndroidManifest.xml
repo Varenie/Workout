@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_dumbbells"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.Actitivities.IconActivity"></activity>
+        <activity android:name=".main.Actitivities.ExercisesActivity"></activity>
+        <activity android:name=".main.Actitivities.IconActivity" />
         <activity
             android:name=".main.Actitivities.BasicActivity"
             android:label="@string/title_activity_basic"

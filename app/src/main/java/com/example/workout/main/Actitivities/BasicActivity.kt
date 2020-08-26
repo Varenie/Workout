@@ -1,17 +1,20 @@
 package com.example.workout.main.Actitivities
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
@@ -22,6 +25,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.workout.R
+import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.DataClasses.User
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +36,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.rengwuxian.materialedittext.MaterialEditText
 import java.io.InputStream
 import kotlin.random.Random
 
@@ -43,6 +48,7 @@ class BasicActivity : AppCompatActivity() {
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
+    private val dbTrainings = db.getReference("Trainings")
 
     val quotes = arrayOf(
         "Чтобы сделать в мире что-нибудь достойное, нельзя стоять на берегу, дрожа и думая о холодной воде и опасностях, подстерегающих пловцов. Надо прыгать в воду и выплывать, как получится / Сидней Смит",
@@ -177,5 +183,40 @@ class BasicActivity : AppCompatActivity() {
 
     fun changeIcon(view: View) {
         startActivity(Intent(this@BasicActivity, IconActivity::class.java))
+    }
+
+    fun addTraining(view: View) {
+        val dialog = AlertDialog.Builder(this@BasicActivity)
+        dialog.setTitle("Добавить тренировку")
+
+        val inflater = LayoutInflater.from(this@BasicActivity)
+        val addWindow = inflater.inflate(R.layout.training_add_layout, null)
+        dialog.setView(addWindow)
+
+        val nameOfTraining = addWindow.findViewById<MaterialEditText>(R.id.name_of_training)
+        val userId = auth.currentUser!!.uid
+
+        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterfaсe, which ->
+            dialogInterfaсe.dismiss()
+        })
+
+        dialog.setPositiveButton("Подтвердить") { dialogInterface, which ->
+            if (TextUtils.isEmpty(nameOfTraining.text)) {
+                val toast = Toast.makeText(
+                    this@BasicActivity,
+                    "Поле с названием пусто!",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            } else {
+                val key = dbTrainings.push().key
+                val training = Training(nameOfTraining.text.toString(), key)
+
+                dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+            }
+        }
+
+        dialog.show()
     }
 }

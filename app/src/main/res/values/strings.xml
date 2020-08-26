@@ -32,4 +32,11 @@
 
     <string name="icon_change">Выберите изображение</string>
     <string name="load_image">Загрузить изображение</string>
+
+    <string name="name_of_training">Название тренировки</string>
+    <string name="exercises">Упражнений: 0</string>
+    <string name="delete">Удалить</string>
+    <string name="name_of_exercise">Название упражнения</string>
+    <string name="count_of_exercise">Колисчесттво повторов</string>
+    <string name="confirm_changes">Сохранить изменения</string>
 </resources>
