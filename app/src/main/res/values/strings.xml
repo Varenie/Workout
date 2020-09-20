@@ -39,4 +39,6 @@
     <string name="name_of_exercise">Название упражнения</string>
     <string name="count_of_exercise">Колисчесттво повторов</string>
     <string name="confirm_changes">Сохранить изменения</string>
+    <string name="weight_chart">Просмотреть график веса</string>
+    <string name="trainings_chart">Просмотреть график тренировок</string>
 </resources>

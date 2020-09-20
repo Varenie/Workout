@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -27,6 +28,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.workout.R
 import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.DataClasses.User
+import com.example.workout.main.DataClasses.WeightInfo
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -38,6 +40,8 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
 import java.io.InputStream
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.random.Random
 
 class BasicActivity : AppCompatActivity() {
@@ -46,9 +50,12 @@ class BasicActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
+    private val format = SimpleDateFormat("dd|MM|yy")
+
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
     private val dbTrainings = db.getReference("Trainings")
+    private val dbWeight = db.getReference("Weight")
 
     val quotes = arrayOf(
         "Чтобы сделать в мире что-нибудь достойное, нельзя стоять на берегу, дрожа и думая о холодной воде и опасностях, подстерегающих пловцов. Надо прыгать в воду и выплывать, как получится / Сидней Смит",
@@ -141,11 +148,12 @@ class BasicActivity : AppCompatActivity() {
     fun changeHeight(view: View){
         val heightText = this.findViewById<EditText>(R.id.edit_height)
         var height = 0.0
-        if (TextUtils.isEmpty(heightText.text)) height = heightText.text.toString().toDouble()
+
+        if (!TextUtils.isEmpty(heightText.text))  height = heightText.text.toString().toDouble()
 
         val userId = auth.currentUser!!.uid
 
-        if (height < 100 || height > 250) {
+        if (height < 100) {
             val toast = Toast.makeText(
                 this@BasicActivity,
                 "Укажите верные параметры роста",
@@ -175,8 +183,15 @@ class BasicActivity : AppCompatActivity() {
             )
             toast.setGravity(Gravity.TOP, 0, 0)
             toast.show()
-        } else
+        } else {
             dbUsers.child(userId).child("weight").setValue(weight)
+
+            val date = format.format(Date())
+            val info = WeightInfo(weight, date.toString())
+
+            dbWeight.child(userId).child(date).setValue(info)
+        }
+
 
         weightText.setText("")
     }
@@ -218,5 +233,9 @@ class BasicActivity : AppCompatActivity() {
         }
 
         dialog.show()
+    }
+
+    fun toWeightChart(view: View) {
+        startActivity(Intent(this@BasicActivity, WeightChartActivity::class.java))
     }
 }

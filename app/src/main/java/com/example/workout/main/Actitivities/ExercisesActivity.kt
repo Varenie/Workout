@@ -48,9 +48,7 @@ class ExercisesActivity : AppCompatActivity() {
         nameTraining.text = name
 
         auth = Firebase.auth
-        val userId = auth.currentUser!!.uid
         val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
-        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")
 
         val myRecycler = findViewById<RecyclerView>(R.id.rv_exercises)
 
@@ -61,14 +59,13 @@ class ExercisesActivity : AppCompatActivity() {
                 val exercisesSingleton = ExercisesSingleton.getInstance()!!
                 for ((i, item) in snapshot.children.withIndex()) {
                     exercisesSingleton.names[i] = item.child("name").value as String?
-                    Log.d("PROVERKA", "${exercisesSingleton.names[i]}")
                     exercisesSingleton.counts[i] = item.child("countOfReplay").getValue(Int::class.java)
                     exercisesSingleton.keys[i] = item.child("key").value as String?
                 }
 
                 val size = snapshot.childrenCount.toInt()
 
-                countOfExercisesRef.setValue(size)//баг
+
                 updateUi(size, myRecycler, trainingKey)
             }
 
@@ -148,5 +145,28 @@ class ExercisesActivity : AppCompatActivity() {
 
     fun confirmChange(view: View) {
         onBackPressed()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        val intent = intent
+        val trainingKey = intent.getStringExtra("key")
+        val userId = auth.currentUser!!.uid
+
+        val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
+        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")
+
+        dbExercise.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val size = snapshot.childrenCount.toInt()
+
+                countOfExercisesRef.setValue(size)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+        })
     }
 }

@@ -74,6 +74,8 @@ class AccountFragment : Fragment() {
         val userImage = root.findViewById<ImageView>(R.id.userImage)
         val image = user!!.icon
 
+        //Загрузка изображения
+        //баг соткреплением фрагмента?
         val inputStream = image?.toUri()?.let {
             requireActivity().contentResolver.openInputStream(
                 it
