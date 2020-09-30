@@ -18,7 +18,7 @@ class IconChangeAdapter(context: Context): BaseAdapter() {
         val view = inflater.inflate(R.layout.item_icon_change, parent, false)
         val image: ImageView = view.findViewById(R.id.imageView)
         image.setImageResource(mThumbIds[position])
-        image.tag = mThumbIds[position]
+        image.tag = mThumbIds[position] //порядковый номер изображения в массиве
         return view
     }
 

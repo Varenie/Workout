@@ -55,27 +55,12 @@
     <GridView
         android:id="@+id/gv_changeIcon"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="match_parent"
         android:columnWidth="90dp"
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dp" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_load_image"
-            android:layout_width="200dp"
-            android:onClick="load_from_gallery"
-            android:layout_height="wrap_content"
-            android:text="@string/load_image"
-            android:layout_gravity="center"/>
-    </LinearLayout>
 
 </LinearLayout>

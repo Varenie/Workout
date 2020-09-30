@@ -1,13 +1,9 @@
 package com.example.workout.main.Actitivities
 
-import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.GridView
@@ -19,8 +15,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.io.IOException
-
 
 class IconActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -41,9 +35,9 @@ class IconActivity : AppCompatActivity() {
         val gv_iconChange = findViewById<GridView>(R.id.gv_changeIcon)
 
         val gridViewOnItemClickListener =
-            OnItemClickListener { parent, v, position, id ->
+            OnItemClickListener { parent, v, position, id -> //установка выбранного изображения для предпросмотра
                 val imageView = v.findViewById<ImageView>(R.id.imageView)
-                val imageUri: Uri = Uri.Builder()
+                val imageUri: Uri = Uri.Builder() //составление Uri изображения
                     .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
                     .authority(resources.getResourcePackageName(imageView.tag as Int))
                     .appendPath(resources.getResourceTypeName(imageView.tag as Int))
@@ -58,7 +52,7 @@ class IconActivity : AppCompatActivity() {
     }
 
     fun confirmIcon(view: View) {
-
+        //подтверждение изображения и добвление его в бд
         val imageView = findViewById<ImageView>(R.id.iv_userIcon)
         val imageUri: Uri = Uri.Builder()
             .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
@@ -70,36 +64,6 @@ class IconActivity : AppCompatActivity() {
         startActivity(Intent(this@IconActivity, BasicActivity::class.java))
     }
 
-    fun load_from_gallery(view: View) {
-        val photoPickerIntent = Intent(Intent.ACTION_PICK)
-        photoPickerIntent.type = "image/*"
-        startActivityForResult(photoPickerIntent, GALLERY_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        var bitmap: Bitmap? = null
-        val imageView = findViewById<ImageView>(R.id.iv_userIcon)
-
-        when(requestCode) {
-            GALLERY_REQUEST -> {
-
-                if (resultCode == Activity.RESULT_OK) {
-                    val selectedImage = data!!.data
-
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImage)
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-
-                    imageView.setImageBitmap(bitmap)
-                    Log.d("USERICON", selectedImage.toString())
-                }
-            }
-        }
-    }
 }
 
 

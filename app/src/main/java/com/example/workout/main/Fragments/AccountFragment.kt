@@ -76,15 +76,8 @@ class AccountFragment : Fragment() {
 
         //Загрузка изображения
         //баг соткреплением фрагмента?
-        val inputStream = image?.toUri()?.let {
-            requireActivity().contentResolver.openInputStream(
-                it
-            )
-        }
-        val bmp = BitmapFactory.decodeStream(inputStream)
-        inputStream?.close()
 
-        userImage.setImageBitmap(bmp)
+        userImage.setImageURI(image!!.toUri())
 
         name.text = user?.name
         height.text = "Рост: ${user.height}"

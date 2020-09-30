@@ -73,5 +73,7 @@ class WeightChartActivity : AppCompatActivity() {
         weightChart.data = data
         weightChart.axisRight.isEnabled = false
         weightChart.xAxis.valueFormatter = MyXAxisFormatter(labels)
+        weightChart.description.isEnabled = false
+
     }
 }
