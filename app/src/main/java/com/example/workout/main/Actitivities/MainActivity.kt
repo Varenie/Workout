@@ -247,4 +247,8 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
+
+    override fun onBackPressed() {
+        //для запрета перехода в активити авторизации и регистрации
+    }
 }

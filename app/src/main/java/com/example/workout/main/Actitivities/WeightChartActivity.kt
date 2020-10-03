@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.workout.R
 import com.example.workout.main.ValueFormatters.MyXAxisFormatter
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -63,17 +64,28 @@ class WeightChartActivity : AppCompatActivity() {
 
     private fun updateUI(entries: ArrayList<Entry>, labels: ArrayList<String>, weightChart: LineChart) {
         val dataset = LineDataSet(entries, "Вес")
+        dataset.axisDependency = YAxis.AxisDependency.LEFT
+        //настройки линии
         dataset.color = Color.RED
         dataset.lineWidth = 2f
         dataset.setCircleColor(Color.RED)
         dataset.valueTextSize = 10f
         dataset.valueTextColor = Color.BLUE
+        //отвечает за закраску площади под графиком
+        dataset.fillAlpha = 255
+        dataset.setDrawFilled(true)
 
         val data = LineData(dataset)
         weightChart.data = data
         weightChart.axisRight.isEnabled = false
-        weightChart.xAxis.valueFormatter = MyXAxisFormatter(labels)
+        weightChart.xAxis.valueFormatter = MyXAxisFormatter(labels) //подключение дат
         weightChart.description.isEnabled = false
+        weightChart.setDrawBorders(true)
+
+        val leftAxis = weightChart.axisLeft
+        leftAxis.setDrawAxisLine(false)
+        leftAxis.setDrawZeroLine(false)
+        leftAxis.setDrawGridLines(false)
 
     }
 }

@@ -238,4 +238,8 @@ class BasicActivity : AppCompatActivity() {
     fun toWeightChart(view: View) {
         startActivity(Intent(this@BasicActivity, WeightChartActivity::class.java))
     }
+
+    override fun onBackPressed() {
+        //для запрета перехода в активити авторизации и регистрации
+    }
 }
