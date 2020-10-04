@@ -50,7 +50,8 @@ class BasicActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
-    private val format = SimpleDateFormat("dd|MM|yy")
+    private val formatMonth = SimpleDateFormat("MMM")
+    private val formatDay = SimpleDateFormat("dd MMM")
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
@@ -186,10 +187,11 @@ class BasicActivity : AppCompatActivity() {
         } else {
             dbUsers.child(userId).child("weight").setValue(weight)
 
-            val date = format.format(Date())
-            val info = WeightInfo(weight, date.toString())
+            val dateMonth = formatMonth.format(Date()).replace(".", "")
+            val dateDay = formatDay.format(Date()).replace(".", "")
+            val info = WeightInfo(weight, dateDay.toString())
 
-            dbWeight.child(userId).child(date).setValue(info)
+            dbWeight.child("$userId/$dateMonth/$dateDay").setValue(info)
         }
 
 

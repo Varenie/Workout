@@ -17,12 +17,15 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WeightChartActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
 
     private val db = Firebase.database
-
+    private val formatMonth = SimpleDateFormat("MMM")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +33,8 @@ class WeightChartActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         val userId = auth.currentUser!!.uid
-        val dbWeight = db.getReference("Weight/$userId")
+        val currentMonth = formatMonth.format(Date()).replace(".", "")
+        val dbWeight = db.getReference("Weight/$userId/$currentMonth")
 
         val weightChart = findViewById<LineChart>(R.id.chart_weight)
 
@@ -38,6 +42,7 @@ class WeightChartActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val entries = ArrayList<Entry>()
                 val labels = ArrayList<String>()
+
                 for ((i, item) in snapshot.children.withIndex()) {
                     val weight = item.child("weight").getValue(Float::class.java)
                     val date = item.child("date").getValue(String::class.java)
@@ -71,14 +76,11 @@ class WeightChartActivity : AppCompatActivity() {
         dataset.setCircleColor(Color.RED)
         dataset.valueTextSize = 10f
         dataset.valueTextColor = Color.BLUE
-        //отвечает за закраску площади под графиком
-        dataset.fillAlpha = 255
-        dataset.setDrawFilled(true)
 
         val data = LineData(dataset)
         weightChart.data = data
         weightChart.axisRight.isEnabled = false
-        weightChart.xAxis.valueFormatter = MyXAxisFormatter(labels) //подключение дат
+        weightChart.xAxis.valueFormatter = MyXAxisFormatter(labels) //отображение дат
         weightChart.description.isEnabled = false
         weightChart.setDrawBorders(true)
 
