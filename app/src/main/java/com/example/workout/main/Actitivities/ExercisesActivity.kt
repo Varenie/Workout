@@ -12,10 +12,12 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workout.R
 import com.example.workout.main.Adapters.ExercisesAdapter
+import com.example.workout.main.Adapters.SimpleTouchHelperCallback
 import com.example.workout.main.Adapters.TrainingsAdapter
 import com.example.workout.main.DataClasses.Exercise
 import com.example.workout.main.DataClasses.Training
@@ -29,6 +31,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
+import kotlinx.android.synthetic.main.activity_main.*
 
 class ExercisesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -86,7 +89,12 @@ class ExercisesActivity : AppCompatActivity() {
         myRecycler.layoutManager = LinearLayoutManager(this@ExercisesActivity)
         myRecycler.setHasFixedSize(true)
 
-        myRecycler.adapter = ExercisesAdapter(size, trainingKey)
+        val adapter = ExercisesAdapter(size, trainingKey)
+        myRecycler.adapter = adapter
+
+        val callback = SimpleTouchHelperCallback(adapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(myRecycler)
     }
 
     fun addExercises(view: View) {
@@ -141,10 +149,6 @@ class ExercisesActivity : AppCompatActivity() {
                 }
             }
         dialog.show()
-    }
-
-    fun confirmChange(view: View) {
-        onBackPressed()
     }
 
     override fun onBackPressed() {

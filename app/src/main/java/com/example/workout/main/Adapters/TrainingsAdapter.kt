@@ -15,17 +15,22 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder>() {
+class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder>(), ItemTouchHelperAdapter {
     private val size = size
     val trainingSingleton = TrainingSingleton.getInstance()!!
 
     private lateinit var auth: FirebaseAuth
 
-    class VHolder(itemView: View, auth: FirebaseAuth, trainings: TrainingSingleton): RecyclerView.ViewHolder(itemView) {
+    val db = Firebase.database
+    lateinit var dbTrainings: DatabaseReference
+    lateinit var dbExercise: DatabaseReference
+
+    class VHolder(itemView: View, trainings: TrainingSingleton): RecyclerView.ViewHolder(itemView) {
         val context = itemView.context
         val trainings = trainings
 
@@ -41,32 +46,10 @@ class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder
         }
         private val nameOfTraining = itemView.findViewById<TextView>(R.id.tv_nameOfTraining)
         private val number = itemView.findViewById<TextView>(R.id.tv_numberOfExercises)
-        private val btn_delete = itemView.findViewById<Button>(R.id.btn_delete_tr)
-
-        val userId = auth.currentUser!!.uid
-        private val db = Firebase.database
-        val dbTrainings = db.getReference("Trainings/user-trainings/$userId")
-        val dbExercise = db.getReference("Trainings//trainings-exercises")
 
         fun bind(position: Int) {
             nameOfTraining.text = trainings.names[position]
             number.text = "Упражнений: ${trainings.counts[position]}"
-
-            //Удаление тренировки
-            btn_delete.setOnClickListener{
-                val trainingKey = trainings.keys[position]
-
-                dbTrainings.addListenerForSingleValueEvent(object: ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        dbExercise.child(trainingKey.toString()).removeValue()
-                        dbTrainings.child(trainingKey.toString()).removeValue()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Failed to read value
-                    }
-                })
-            }
         }
     }
 
@@ -76,7 +59,13 @@ class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder
         val view = inflater.inflate(R.layout.training_recycler_item, parent, false)
 
         auth = Firebase.auth
-        return VHolder(view, auth, trainingSingleton)
+        val userId = auth.currentUser!!.uid
+
+        dbTrainings = db.getReference("Trainings/user-trainings/$userId")
+        dbExercise = db.getReference("Trainings//trainings-exercises")
+
+
+        return VHolder(view, trainingSingleton)
     }
 
     override fun onBindViewHolder(holder: VHolder, position: Int) {
@@ -85,5 +74,24 @@ class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder
 
     override fun getItemCount(): Int {
         return size
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+
+    }
+
+    override fun onItemDismiss(position: Int) {
+        val trainingKey = trainingSingleton.keys[position]
+
+        dbTrainings.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dbExercise.child(trainingKey.toString()).removeValue()
+                dbTrainings.child(trainingKey.toString()).removeValue()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+            }
+        })
     }
 }

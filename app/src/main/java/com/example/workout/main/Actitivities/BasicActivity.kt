@@ -2,15 +2,10 @@ package com.example.workout.main.Actitivities
 
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
+import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -39,7 +34,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
@@ -141,9 +135,15 @@ class BasicActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_settings)
+            startActivity(Intent(this@BasicActivity, ChangeInfoActivity::class.java))
+        return super.onOptionsItemSelected(item)
+    }
+
     fun logOut(view: View) {
         Firebase.auth.signOut()
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this@BasicActivity, MainActivity::class.java))
     }
 
     fun changeHeight(view: View){

@@ -8,9 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workout.R
+import com.example.workout.main.Adapters.ExercisesAdapter
+import com.example.workout.main.Adapters.SimpleTouchHelperCallback
 import com.example.workout.main.Adapters.TrainingsAdapter
 import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.Singletons.TrainingSingleton
@@ -73,6 +76,11 @@ class TrainingFragment : Fragment() {
         myRecycler.layoutManager = LinearLayoutManager(activity)
         myRecycler.setHasFixedSize(true)
 
-        myRecycler.adapter = TrainingsAdapter(size)
+        val adapter = TrainingsAdapter(size)
+        myRecycler.adapter = adapter
+
+        val callback = SimpleTouchHelperCallback(adapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(myRecycler)
     }
 }
