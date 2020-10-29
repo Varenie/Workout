@@ -6,12 +6,11 @@ import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.*
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import androidx.drawerlayout.widget.DrawerLayout
@@ -38,6 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
+
 class BasicActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -58,6 +58,13 @@ class BasicActivity : AppCompatActivity() {
         "Всегда делай то, что ты боишься сделать / Ральф Уолдо Эмерсон",
         "Успех чаще выпадает на долю того, кто смело действует, но его редко добиваются те, кто проявляет робость и постоянно опасается последствий / Джавахарлал Неру",
         "Если Вы хотите иметь то, что никогда не имели, — начните делать то, что никогда не делали / Ричард Бах"
+    )
+
+    val hastags = arrayOf(
+        "ноги",
+        "руки",
+        "пресс",
+        "спина"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -211,11 +218,22 @@ class BasicActivity : AppCompatActivity() {
         dialog.setView(addWindow)
 
         val nameOfTraining = addWindow.findViewById<MaterialEditText>(R.id.name_of_training)
+        val switch = addWindow.findViewById<SwitchCompat>(R.id.sw_private_training)
         val userId = auth.currentUser!!.uid
 
-        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterfaсe, which ->
-            dialogInterfaсe.dismiss()
-        })
+        //ниспадающий список для хэштэгов тренировок
+        val spinner = addWindow.findViewById<Spinner>(R.id.sp_hashtags)
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, hastags)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        val item = spinner.selectedItemPosition
+
+        dialog.setNegativeButton(
+            "Отменить",
+            DialogInterface.OnClickListener { dialogInterfaсe, which ->
+                dialogInterfaсe.dismiss()
+            })
 
         dialog.setPositiveButton("Подтвердить") { dialogInterface, which ->
             if (TextUtils.isEmpty(nameOfTraining.text)) {
@@ -229,8 +247,18 @@ class BasicActivity : AppCompatActivity() {
             } else {
                 val key = dbTrainings.push().key
                 val training = Training(nameOfTraining.text.toString(), key)
+                val item = spinner.selectedItemPosition
+                val tag = hastags[item]
 
-                dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                if(switch.isChecked) {
+                    dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                    dbTrainings.child("$tag").setValue(training)
+                } else {
+                    dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                }
+
+
+
             }
         }
 

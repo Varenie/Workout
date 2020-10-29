@@ -18,7 +18,25 @@
             android:hint="@string/name_of_training"
             android:textSize="20sp"
             android:inputType="text"
-            app:met_floatingLabel="normal"/>
+            app:met_floatingLabel="normal"
+            android:layout_marginBottom="5dp"/>
+
+        <Spinner
+            android:id="@+id/sp_hashtags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/sw_private_training"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/public_training"
+            android:textOff="@string/no"
+            android:textOn="@string/yes"
+            app:showText="true"
+            android:layout_marginTop="5dp"/>
 
     </LinearLayout>
 
