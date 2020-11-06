@@ -151,21 +151,25 @@ class ExercisesActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    //Когда выходишь из активити, добавляется количество упражнений
     override fun onBackPressed() {
         super.onBackPressed()
 
         val intent = intent
         val trainingKey = intent.getStringExtra("key")
+        val tag = intent.getStringExtra("tag")
         val userId = auth.currentUser!!.uid
 
         val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
-        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")
+        val countOfExerciseTagsRef = db.getReference("Trainings/$tag/$trainingKey/countExercises")                  //добавляем количесвто упражнений в тренировку в тэгах
+        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")   //добавляем количесвто упражнений в тренировку в ветке юзера
 
         dbExercise.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val size = snapshot.childrenCount.toInt()
 
                 countOfExercisesRef.setValue(size)
+                countOfExerciseTagsRef.setValue(size)
             }
 
             override fun onCancelled(error: DatabaseError) {

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.*
 import android.widget.*
-import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
@@ -23,6 +22,7 @@ import com.example.workout.R
 import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.DataClasses.User
 import com.example.workout.main.DataClasses.WeightInfo
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -227,7 +227,6 @@ class BasicActivity : AppCompatActivity() {
             ArrayAdapter(this, android.R.layout.simple_spinner_item, hastags)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-        val item = spinner.selectedItemPosition
 
         dialog.setNegativeButton(
             "Отменить",
@@ -246,13 +245,13 @@ class BasicActivity : AppCompatActivity() {
                 toast.show()
             } else {
                 val key = dbTrainings.push().key
-                val training = Training(nameOfTraining.text.toString(), key)
                 val item = spinner.selectedItemPosition
                 val tag = hastags[item]
+                val training = Training(nameOfTraining.text.toString(), key, tag)
 
                 if(switch.isChecked) {
                     dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
-                    dbTrainings.child("$tag").setValue(training)
+                    dbTrainings.child("$tag/$key").setValue(training)
                 } else {
                     dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
                 }

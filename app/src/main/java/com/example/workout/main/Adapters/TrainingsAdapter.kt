@@ -41,6 +41,7 @@ class TrainingsAdapter(size: Int): RecyclerView.Adapter<TrainingsAdapter.VHolder
                 val intent = Intent(context, ExercisesActivity::class.java)
                 intent.putExtra("key", trainings.keys[adapterPosition])
                 intent.putExtra("name", trainings.names[adapterPosition])
+                intent.putExtra("tag", trainings.tags[adapterPosition])
                 context.startActivity(intent)
             })
         }

@@ -6,6 +6,9 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -30,6 +33,13 @@ class TrainingFragment : Fragment() {
 
     private val db = Firebase.database
 
+    val hastags = arrayOf(
+        "ноги",
+        "руки",
+        "пресс",
+        "спина"
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,11 +48,23 @@ class TrainingFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_training, container, false)
         val myRecycler = root.findViewById<RecyclerView>(R.id.rv_trainings)
 
+        val spinner = root.findViewById<Spinner>(R.id.sp_search_hashtags)
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, hastags)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        val searchBtn = root.findViewById<ImageButton>(R.id.ibtn_search)
+
+        searchBtn.setOnClickListener {
+            searchHashtags(it, spinner, myRecycler)
+        }
 
         auth = Firebase.auth
         val userId = auth.currentUser!!.uid
         val dbTrainings = db.getReference("Trainings/user-trainings/$userId")
 
+        //поместить это в отдельную функцию, так как ее можно будет использовать для сброса фильтров поиска
         dbTrainings.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
@@ -52,6 +74,7 @@ class TrainingFragment : Fragment() {
                     trainingSingleton.names[i] = item.child("name").value as String?
                     trainingSingleton.counts[i] = item.child("countExercises").getValue(Int::class.java)
                     trainingSingleton.keys[i] = item.child("key").value as String?
+                    trainingSingleton.tags[i] = item.child("tag").value as String?
                 }
 
                 val size = snapshot.childrenCount.toInt()
@@ -82,5 +105,44 @@ class TrainingFragment : Fragment() {
         val callback = SimpleTouchHelperCallback(adapter)
         val touchHelper = ItemTouchHelper(callback)
         touchHelper.attachToRecyclerView(myRecycler)
+    }
+
+    fun searchHashtags(view: View, spinner: Spinner, myRecycler: RecyclerView) {
+        val spinner = spinner
+        val position = spinner.selectedItemPosition
+        val myRecycler = myRecycler
+        val tag = hastags[position]
+
+        val dbPublicTrainings = db.getReference("Trainings/$tag")
+
+        dbPublicTrainings.addValueEventListener(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                val trainingSingleton = TrainingSingleton.getInstance()!!
+                for ((i, item) in snapshot.children.withIndex()) {
+                    trainingSingleton.names[i] = item.child("name").value as String?
+                    trainingSingleton.counts[i] = item.child("countExercises").getValue(Int::class.java)
+                    trainingSingleton.keys[i] = item.child("key").value as String?
+                    trainingSingleton.tags[i] = item.child("tag").value as String?
+                }
+
+                val size = snapshot.childrenCount.toInt()
+                Log.e("SIZE", size.toString())
+                updateUi(size, myRecycler)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                val toast = Toast.makeText(
+                    activity!!.applicationContext,
+                    "Ошибка загрузки данных",
+                    Toast.LENGTH_SHORT
+                )
+                toast.setGravity(Gravity.TOP, 0, 0)
+                toast.show()
+            }
+        })
+
     }
 }
