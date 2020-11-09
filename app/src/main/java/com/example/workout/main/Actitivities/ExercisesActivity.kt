@@ -12,10 +12,12 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workout.R
 import com.example.workout.main.Adapters.ExercisesAdapter
+import com.example.workout.main.Adapters.SimpleTouchHelperCallback
 import com.example.workout.main.Adapters.TrainingsAdapter
 import com.example.workout.main.DataClasses.Exercise
 import com.example.workout.main.DataClasses.Training
@@ -29,6 +31,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
+import kotlinx.android.synthetic.main.activity_main.*
 
 class ExercisesActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -86,7 +89,12 @@ class ExercisesActivity : AppCompatActivity() {
         myRecycler.layoutManager = LinearLayoutManager(this@ExercisesActivity)
         myRecycler.setHasFixedSize(true)
 
-        myRecycler.adapter = ExercisesAdapter(size, trainingKey)
+        val adapter = ExercisesAdapter(size, trainingKey)
+        myRecycler.adapter = adapter
+
+        val callback = SimpleTouchHelperCallback(adapter)
+        val touchHelper = ItemTouchHelper(callback)
+        touchHelper.attachToRecyclerView(myRecycler)
     }
 
     fun addExercises(view: View) {
@@ -143,25 +151,25 @@ class ExercisesActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun confirmChange(view: View) {
-        onBackPressed()
-    }
-
+    //Когда выходишь из активити, добавляется количество упражнений
     override fun onBackPressed() {
         super.onBackPressed()
 
         val intent = intent
         val trainingKey = intent.getStringExtra("key")
+        val tag = intent.getStringExtra("tag")
         val userId = auth.currentUser!!.uid
 
         val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
-        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")
+        val countOfExerciseTagsRef = db.getReference("Trainings/$tag/$trainingKey/countExercises")                  //добавляем количесвто упражнений в тренировку в тэгах
+        val countOfExercisesRef = db.getReference("Trainings/user-trainings/$userId/$trainingKey/countExercises")   //добавляем количесвто упражнений в тренировку в ветке юзера
 
         dbExercise.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val size = snapshot.childrenCount.toInt()
 
                 countOfExercisesRef.setValue(size)
+                countOfExerciseTagsRef.setValue(size)
             }
 
             override fun onCancelled(error: DatabaseError) {

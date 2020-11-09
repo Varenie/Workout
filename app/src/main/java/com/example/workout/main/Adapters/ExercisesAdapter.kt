@@ -20,38 +20,24 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ExercisesAdapter(size: Int, trainingKey: String): RecyclerView.Adapter<ExercisesAdapter.VHolder>() {
+class ExercisesAdapter(size: Int, trainingKey: String): RecyclerView.Adapter<ExercisesAdapter.VHolder>(), ItemTouchHelperAdapter {
     private val size = size
     val trainingKey = trainingKey
     val exercisesSingleton = ExercisesSingleton.getInstance()!!
 
     private lateinit var auth: FirebaseAuth
 
+    private val db = Firebase.database
+    val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
+
     class VHolder(itemView: View, auth: FirebaseAuth, trainingKey: String): RecyclerView.ViewHolder(itemView) {
         private val nameOfExercise = itemView.findViewById<TextView>(R.id.tv_nameOfExercise)
         private val number = itemView.findViewById<TextView>(R.id.tv_numberOfReplays)
-        private val btn_delete = itemView.findViewById<Button>(R.id.btn_delete_ex)
-
-
-        private val db = Firebase.database
-        val dbExercise = db.getReference("Trainings//trainings-exercises/$trainingKey/")
 
         fun bind(exercises: ExercisesSingleton, position: Int) {
             nameOfExercise.text = exercises.names[position]
             number.text = "Упражнений: ${exercises.counts[position]}"
 
-            //Удаление тренировки
-            btn_delete.setOnClickListener{
-                dbExercise.addListenerForSingleValueEvent(object: ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        dbExercise.child(exercises.keys[position].toString()).removeValue()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // Failed to read value
-                    }
-                })
-            }
         }
     }
 
@@ -70,5 +56,21 @@ class ExercisesAdapter(size: Int, trainingKey: String): RecyclerView.Adapter<Exe
 
     override fun getItemCount(): Int {
         return size
+    }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+
+    }
+
+    override fun onItemDismiss(position: Int) {                 //Удаление упражнение по свайпу
+        dbExercise.addListenerForSingleValueEvent(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dbExercise.child(exercisesSingleton.keys[position].toString()).removeValue()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+            }
+        })
     }
 }

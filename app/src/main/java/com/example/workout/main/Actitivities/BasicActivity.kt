@@ -2,21 +2,14 @@ package com.example.workout.main.Actitivities
 
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.net.toUri
 import androidx.drawerlayout.widget.DrawerLayout
@@ -29,6 +22,7 @@ import com.example.workout.R
 import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.DataClasses.User
 import com.example.workout.main.DataClasses.WeightInfo
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -39,10 +33,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.rengwuxian.materialedittext.MaterialEditText
-import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
+
 
 class BasicActivity : AppCompatActivity() {
 
@@ -50,7 +44,8 @@ class BasicActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
 
-    private val format = SimpleDateFormat("dd|MM|yy")
+    private val formatMonth = SimpleDateFormat("MMM")
+    private val formatDay = SimpleDateFormat("dd MMM")
 
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
@@ -63,6 +58,13 @@ class BasicActivity : AppCompatActivity() {
         "Всегда делай то, что ты боишься сделать / Ральф Уолдо Эмерсон",
         "Успех чаще выпадает на долю того, кто смело действует, но его редко добиваются те, кто проявляет робость и постоянно опасается последствий / Джавахарлал Неру",
         "Если Вы хотите иметь то, что никогда не имели, — начните делать то, что никогда не делали / Ричард Бах"
+    )
+
+    val hastags = arrayOf(
+        "ноги",
+        "руки",
+        "пресс",
+        "спина"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -140,9 +142,15 @@ class BasicActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_settings)
+            startActivity(Intent(this@BasicActivity, ChangeInfoActivity::class.java))
+        return super.onOptionsItemSelected(item)
+    }
+
     fun logOut(view: View) {
         Firebase.auth.signOut()
-        startActivity(Intent(this, MainActivity::class.java))
+        startActivity(Intent(this@BasicActivity, MainActivity::class.java))
     }
 
     fun changeHeight(view: View){
@@ -186,10 +194,11 @@ class BasicActivity : AppCompatActivity() {
         } else {
             dbUsers.child(userId).child("weight").setValue(weight)
 
-            val date = format.format(Date())
-            val info = WeightInfo(weight, date.toString())
+            val dateMonth = formatMonth.format(Date()).replace(".", "")
+            val dateDay = formatDay.format(Date()).replace(".", "")
+            val info = WeightInfo(weight, dateDay.toString())
 
-            dbWeight.child(userId).child(date).setValue(info)
+            dbWeight.child("$userId/$dateMonth/$dateDay").setValue(info)
         }
 
 
@@ -209,11 +218,21 @@ class BasicActivity : AppCompatActivity() {
         dialog.setView(addWindow)
 
         val nameOfTraining = addWindow.findViewById<MaterialEditText>(R.id.name_of_training)
+        val switch = addWindow.findViewById<SwitchCompat>(R.id.sw_private_training)
         val userId = auth.currentUser!!.uid
 
-        dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterfaсe, which ->
-            dialogInterfaсe.dismiss()
-        })
+        //ниспадающий список для хэштэгов тренировок
+        val spinner = addWindow.findViewById<Spinner>(R.id.sp_hashtags)
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, hastags)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        dialog.setNegativeButton(
+            "Отменить",
+            DialogInterface.OnClickListener { dialogInterfaсe, which ->
+                dialogInterfaсe.dismiss()
+            })
 
         dialog.setPositiveButton("Подтвердить") { dialogInterface, which ->
             if (TextUtils.isEmpty(nameOfTraining.text)) {
@@ -226,9 +245,19 @@ class BasicActivity : AppCompatActivity() {
                 toast.show()
             } else {
                 val key = dbTrainings.push().key
-                val training = Training(nameOfTraining.text.toString(), key)
+                val item = spinner.selectedItemPosition
+                val tag = hastags[item]
+                val training = Training(nameOfTraining.text.toString(), key, tag)
 
-                dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                if(switch.isChecked) {
+                    dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                    dbTrainings.child("$tag/$key").setValue(training)
+                } else {
+                    dbTrainings.child("/user-trainings/$userId/$key").setValue(training)
+                }
+
+
+
             }
         }
 

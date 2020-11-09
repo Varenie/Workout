@@ -4,6 +4,7 @@ class TrainingSingleton {
     var names: Array<String?> = arrayOfNulls(200)
     var counts: Array<Int?> = arrayOfNulls(200)
     var keys: Array<String?> = arrayOfNulls(200)
+    var tags: Array<String?> = arrayOfNulls(200)
 
     companion object{
         private var instance = TrainingSingleton()
@@ -15,6 +16,7 @@ class TrainingSingleton {
                 instance.names = arrayOfNulls(200)
                 instance.counts = arrayOfNulls(200)
                 instance.keys = arrayOfNulls(200)
+                instance.tags = arrayOfNulls(200)
             }
             return instance
         }
