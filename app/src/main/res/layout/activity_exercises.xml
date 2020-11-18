@@ -43,9 +43,9 @@
         android:onClick="addExercises"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.997"
+        app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.933"
-        tools:srcCompat="@drawable/ic_add" />
+        app:layout_constraintVertical_bias="0.962"
+        tools:src="@drawable/ic_add" />
 </androidx.constraintlayout.widget.ConstraintLayout>

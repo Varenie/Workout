@@ -6,9 +6,11 @@ import android.view.*
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.workout.R
 import com.example.workout.main.Actitivities.ExercisesActivity
+import com.example.workout.main.DataClasses.Exercise
 import com.example.workout.main.DataClasses.Training
 import com.example.workout.main.Singletons.ExercisesSingleton
 import com.example.workout.main.Singletons.TrainingSingleton
@@ -16,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -33,11 +36,31 @@ class ExercisesAdapter(size: Int, trainingKey: String): RecyclerView.Adapter<Exe
     class VHolder(itemView: View, auth: FirebaseAuth, trainingKey: String): RecyclerView.ViewHolder(itemView) {
         private val nameOfExercise = itemView.findViewById<TextView>(R.id.tv_nameOfExercise)
         private val number = itemView.findViewById<TextView>(R.id.tv_numberOfReplays)
+        private val weight = itemView.findViewById<TextView>(R.id.tv_weight_of_exercise)
+        private val currentNumber = itemView.findViewById<TextView>(R.id.et_count_of_replays)
+        private val currentWeight = itemView.findViewById<TextView>(R.id.et_weight_of_exercise)
+        private val btnFinish = itemView.findViewById<Button>(R.id.btn_finish_exercise)
 
-        fun bind(exercises: ExercisesSingleton, position: Int) {
+        fun bind(exercises: ExercisesSingleton, position: Int, dbExercise: DatabaseReference) {
             nameOfExercise.text = exercises.names[position]
-            number.text = "Упражнений: ${exercises.counts[position]}"
+            number.text = "Повторов: ${exercises.counts[position]}"
+            weight.text = "Вес: ${exercises.weight[position]}"
 
+            btnFinish.setOnClickListener {
+                var number = exercises.counts[position]
+                var weight = exercises.weight[position]
+                val key = exercises.keys[position]
+
+                if (!currentNumber.text.isNullOrBlank()) number = currentNumber.text.toString().toInt()
+                if (!currentWeight.text.isNullOrBlank()) weight = currentWeight.text.toString().toDouble()
+
+                val exercise = Exercise(exercises.names[position], number, weight, key)
+
+                if (key != null) {
+                    dbExercise.child(key).setValue(exercise)
+                }
+
+            }
         }
     }
 
@@ -51,7 +74,7 @@ class ExercisesAdapter(size: Int, trainingKey: String): RecyclerView.Adapter<Exe
     }
 
     override fun onBindViewHolder(holder: VHolder, position: Int) {
-        holder.bind(exercisesSingleton, position)
+        holder.bind(exercisesSingleton, position,  dbExercise)
     }
 
     override fun getItemCount(): Int {

@@ -63,6 +63,7 @@ class ExercisesActivity : AppCompatActivity() {
                 for ((i, item) in snapshot.children.withIndex()) {
                     exercisesSingleton.names[i] = item.child("name").value as String?
                     exercisesSingleton.counts[i] = item.child("countOfReplay").getValue(Int::class.java)
+                    exercisesSingleton.weight[i] = item.child("weight").getValue(Double::class.java)
                     exercisesSingleton.keys[i] = item.child("key").value as String?
                 }
 
@@ -107,6 +108,7 @@ class ExercisesActivity : AppCompatActivity() {
 
         val nameOfExercise = addWindow.findViewById<MaterialEditText>(R.id.name_of_exercise)
         val countOfReplays = addWindow.findViewById<MaterialEditText>(R.id.count_of_replays)
+        val weightOfExercise = addWindow.findViewById<MaterialEditText>(R.id.met_weight_exercise)
 
         dialog.setNegativeButton("Отменить", DialogInterface.OnClickListener { dialogInterfaсe, which ->
             dialogInterfaсe.dismiss()
@@ -114,6 +116,7 @@ class ExercisesActivity : AppCompatActivity() {
 
         dialog.setPositiveButton("Подтвердить") { dialogInterface, which ->
             var countR = 0
+            var weight = 0.0
             if (!TextUtils.isEmpty(countOfReplays.text)) countR = countOfReplays.text.toString().toInt()
 
             when {
@@ -138,11 +141,17 @@ class ExercisesActivity : AppCompatActivity() {
                 }
 
                 else -> {
+
+                    if (!weightOfExercise.text.isNullOrBlank()) {
+                        weight = weightOfExercise.text.toString().toDouble()
+                    }
+
                     val intent = intent
                     val trainingKey = intent.getStringExtra("key")
                     val key = dbTrainings.push().key
-                    val exercise = Exercise(nameOfExercise.text.toString(), countR, key.toString())
+                    val exercise = Exercise(nameOfExercise.text.toString(), countR, weight, key.toString())
 
+                    Log.e("PROV", "blbl")
                     dbTrainings.child("/trainings-exercises/$trainingKey/$key")
                         .setValue(exercise)
                     }

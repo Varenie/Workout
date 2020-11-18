@@ -46,4 +46,7 @@
     <string name="no">Нет</string>
     <string name="yes">Да</string>
     <string name="accept">Принять</string>
+    <string name="finish">Завершить упражнение</string>
+    <string name="current">Текущий: </string>
+    <string name="done">Сделано:</string>
 </resources>
