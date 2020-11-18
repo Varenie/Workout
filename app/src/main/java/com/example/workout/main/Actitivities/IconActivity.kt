@@ -4,11 +4,13 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.GridView
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.example.workout.R
 import com.example.workout.main.Adapters.IconChangeAdapter
 import com.google.firebase.auth.FirebaseAuth
@@ -22,8 +24,6 @@ class IconActivity : AppCompatActivity() {
     private val db = Firebase.database
     private val dbUsers = db.getReference("Users")
 
-    companion object var GALLERY_REQUEST = 1
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_icon)
@@ -33,6 +33,8 @@ class IconActivity : AppCompatActivity() {
 
         val userIcon = findViewById<ImageView>(R.id.iv_userIcon)
         val gv_iconChange = findViewById<GridView>(R.id.gv_changeIcon)
+
+        userIcon.tag = R.drawable.user
 
         val gridViewOnItemClickListener =
             OnItemClickListener { parent, v, position, id -> //установка выбранного изображения для предпросмотра
@@ -61,7 +63,7 @@ class IconActivity : AppCompatActivity() {
             .appendPath(resources.getResourceEntryName(imageView.tag as Int))
             .build()
         dbUsers.child("/$userId/icon").setValue(imageUri.toString())
-        startActivity(Intent(this@IconActivity, BasicActivity::class.java))
+        startActivity(Intent(this@IconActivity, ChangeInfoActivity::class.java))
     }
 
 }

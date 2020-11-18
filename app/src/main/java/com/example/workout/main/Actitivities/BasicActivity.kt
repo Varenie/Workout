@@ -205,10 +205,6 @@ class BasicActivity : AppCompatActivity() {
         weightText.setText("")
     }
 
-    fun changeIcon(view: View) {
-        startActivity(Intent(this@BasicActivity, IconActivity::class.java))
-    }
-
     fun addTraining(view: View) {
         val dialog = AlertDialog.Builder(this@BasicActivity)
         dialog.setTitle("Добавить тренировку")

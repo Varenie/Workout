@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -78,7 +79,7 @@ class TrainingFragment : Fragment() {
                 }
 
                 val size = snapshot.childrenCount.toInt()
-                updateUi(size, myRecycler)
+                updateUi(size, myRecycler, requireActivity())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -95,11 +96,11 @@ class TrainingFragment : Fragment() {
         return root
     }
 
-    private fun updateUi(size: Int, myRecycler: RecyclerView) {
+    private fun updateUi(size: Int, myRecycler: RecyclerView, activity: FragmentActivity) {
         myRecycler.layoutManager = LinearLayoutManager(activity)
         myRecycler.setHasFixedSize(true)
 
-        val adapter = TrainingsAdapter(size)
+        val adapter = TrainingsAdapter(size, activity)
         myRecycler.adapter = adapter
 
         val callback = SimpleTouchHelperCallback(adapter)
@@ -129,7 +130,7 @@ class TrainingFragment : Fragment() {
 
                 val size = snapshot.childrenCount.toInt()
                 Log.e("SIZE", size.toString())
-                updateUi(size, myRecycler)
+                updateUi(size, myRecycler, requireActivity())
             }
 
             override fun onCancelled(error: DatabaseError) {
