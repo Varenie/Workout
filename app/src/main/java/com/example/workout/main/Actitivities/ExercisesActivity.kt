@@ -90,7 +90,7 @@ class ExercisesActivity : AppCompatActivity() {
         myRecycler.layoutManager = LinearLayoutManager(this@ExercisesActivity)
         myRecycler.setHasFixedSize(true)
 
-        val adapter = ExercisesAdapter(size, trainingKey)
+        val adapter = ExercisesAdapter(size, trainingKey, this)
         myRecycler.adapter = adapter
 
         val callback = SimpleTouchHelperCallback(adapter)
